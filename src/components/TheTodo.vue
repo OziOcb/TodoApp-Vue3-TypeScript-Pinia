@@ -9,6 +9,10 @@
     <button type="submit" class="newTaskForm__button">Add</button>
   </form>
 
+  <button class="buttonRemoveAll" @click="handleRemoveAll()">
+    Remove all tasks
+  </button>
+
   <div class="container">
     <ul class="list">
       <li class="list__item" v-for="task in tasks" :key="task.id">
@@ -65,8 +69,12 @@ const handleSubmit = () => {
 };
 
 const handleRemoveTask = (taskId: string) => {
-  tasks.value = tasks.value.filter((task) => task.id !== taskId);
+  tasks.value = tasks.value.filter((task: Task) => task.id !== taskId);
+  saveTasks();
+};
 
+const handleRemoveAll = () => {
+  tasks.value = [];
   saveTasks();
 };
 </script>
@@ -82,6 +90,11 @@ $border: 1px solid #333;
 .newTaskForm {
   padding-bottom: 6px;
   border-bottom: $border;
+}
+
+.buttonRemoveAll {
+  display: block;
+  margin: 16px auto;
 }
 
 .list {
