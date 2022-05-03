@@ -1,5 +1,5 @@
 <template>
-  <form class="newTaskForm" @submit.prevent="handleSubmit()">
+  <form class="newTaskForm container" @submit.prevent="handleSubmit()">
     <input
       ref="newTaskInput"
       type="text"
@@ -9,21 +9,21 @@
     <button type="submit" class="newTaskForm__button">Add</button>
   </form>
 
-  <ul class="list">
-    <li class="list__item" v-for="task in tasks" :key="task.id">
-      <input
-        type="checkbox"
-        :name="task.id"
-        :id="task.id"
-        v-model="task.completed"
-        @change="saveTasks()"
-      />
-
-      <label :for="task.id"> {{ task.title }} </label>
-
-      <button>X</button>
-    </li>
-  </ul>
+  <div class="container">
+    <ul class="list">
+      <li class="list__item" v-for="task in tasks" :key="task.id">
+        <input
+          type="checkbox"
+          :name="task.id"
+          :id="task.id"
+          v-model="task.completed"
+          @change="saveTasks()"
+        />
+        <label :for="task.id"> {{ task.title }} </label>
+        <button>X</button>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -66,8 +66,12 @@ const handleSubmit = () => {
 <style lang="scss" scoped>
 $border: 1px solid #333;
 
+.container {
+  display: flex;
+  justify-content: center;
+}
+
 .newTaskForm {
-  margin-bottom: 8px;
   padding-bottom: 6px;
   border-bottom: $border;
 }
