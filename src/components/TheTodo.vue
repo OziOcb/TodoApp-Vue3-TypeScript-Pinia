@@ -10,7 +10,7 @@
   </form>
 
   <ul class="list">
-    <li v-for="task in tasks" :key="task.id">
+    <li class="list__item" v-for="task in tasks" :key="task.id">
       <input
         type="checkbox"
         :name="task.id"
@@ -18,7 +18,10 @@
         v-model="task.completed"
         @change="saveTasks()"
       />
+
       <label :for="task.id"> {{ task.title }} </label>
+
+      <button>X</button>
     </li>
   </ul>
 </template>
@@ -60,9 +63,28 @@ const handleSubmit = () => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$border: 1px solid #333;
+
+.newTaskForm {
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: $border;
+}
+
 .list {
   list-style: none;
   padding: 0;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 300px;
+    border-bottom: $border;
+    margin-bottom: 8px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
 }
 </style>
