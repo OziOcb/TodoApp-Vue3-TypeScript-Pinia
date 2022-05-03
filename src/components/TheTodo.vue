@@ -1,10 +1,10 @@
 <template>
   <form class="newTaskForm" @submit.prevent="handleSubmit()">
     <input
+      ref="newTaskInput"
       type="text"
       class="newTaskForm__input"
       v-model="newTaskTitle"
-      ref="inputElo"
     />
     <button type="submit" class="newTaskForm__button">Add</button>
   </form>
@@ -26,16 +26,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { v4 as uuidV4 } from "uuid";
-
-type Task = {
-  id: string;
-  title: string;
-  completed: boolean;
-  createdAt: Date;
-};
+import type { Task } from "@/types/task-types";
 
 const newTaskTitle = ref("");
-const inputElo = ref<HTMLInputElement | null>(null);
+const newTaskInput = ref<HTMLInputElement | null>(null);
 const tasks = ref<Task[]>([]);
 const saveTasks = () => {
   localStorage.setItem("tasks", JSON.stringify(tasks.value));
@@ -46,7 +40,7 @@ onMounted(() => {
   if (!tasksJSON) return [];
   tasks.value = JSON.parse(tasksJSON);
 
-  inputElo.value?.focus();
+  newTaskInput.value?.focus();
 });
 
 const handleSubmit = () => {
