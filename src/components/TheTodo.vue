@@ -19,8 +19,10 @@
           v-model="task.completed"
           @change="saveTasks()"
         />
+
         <label :for="task.id"> {{ task.title }} </label>
-        <button>X</button>
+
+        <button @click="handleRemoveTask(task.id)">X</button>
       </li>
     </ul>
   </div>
@@ -60,6 +62,12 @@ const handleSubmit = () => {
 
     saveTasks();
   }
+};
+
+const handleRemoveTask = (taskId: string) => {
+  tasks.value = tasks.value.filter((task) => task.id !== taskId);
+
+  saveTasks();
 };
 </script>
 
