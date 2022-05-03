@@ -16,29 +16,42 @@
   <div class="container">
     <ul class="list">
       <li class="list__item" v-for="task in tasks" :key="task.id">
-        <input
-          type="checkbox"
-          :name="task.id"
-          :id="task.id"
-          v-model="task.completed"
-          @change="saveTasks()"
-        />
+        <template v-if="!task.isEditing">
+          <input
+            type="checkbox"
+            :name="task.id"
+            :id="task.id"
+            v-model="task.completed"
+            @change="saveTasks()"
+          />
+          <label :for="task.id"> {{ task.title }} </label>
+        </template>
 
-        <label :for="task.id"> {{ task.title }} </label>
+        <template v-else>
+          <form @submit.prevent="handleSaveEditedTask(task)">
+            <input ref="editTaskInputs" type="text" v-model="task.title" />
 
-        <button @click="handleRemoveTask(task.id)">X</button>
+            <button type="submit" class="newTaskForm__button">Save</button>
+          </form>
+        </template>
+
+        <div>
+          <button @click="handleRemoveTask(task.id)">X</button>
+          <button @click="handleEditTask(task)">Edit</button>
+        </div>
       </li>
     </ul>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import { v4 as uuidV4 } from "uuid";
 import type { Task } from "@/types/task-types";
 
 const newTaskTitle = ref("");
 const newTaskInput = ref<HTMLInputElement | null>(null);
+const editTaskInputs = ref<HTMLInputElement[]>([]);
 const tasks = ref<Task[]>([]);
 const saveTasks = () => {
   localStorage.setItem("tasks", JSON.stringify(tasks.value));
@@ -59,6 +72,7 @@ const handleSubmit = () => {
       title: newTaskTitle.value,
       completed: false,
       createdAt: new Date(),
+      isEditing: false,
     };
 
     tasks.value.push(newTask);
@@ -75,6 +89,19 @@ const handleRemoveTask = (taskId: string) => {
 
 const handleRemoveAll = () => {
   tasks.value = [];
+  saveTasks();
+};
+
+const handleEditTask = async (task: Task) => {
+  task.isEditing = true;
+
+  await nextTick();
+
+  editTaskInputs?.value[editTaskInputs?.value.length - 1]?.focus();
+};
+
+const handleSaveEditedTask = (task: Task) => {
+  task.isEditing = false;
   saveTasks();
 };
 </script>
