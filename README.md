@@ -1,6 +1,10 @@
-# play-vue-3
+# TodoApp-Vue3-TypeScript-Pinia
 
-This template should help get you started developing with Vue 3 in Vite.
+## Description
+This is a quick and simple app build using Vue3, TypeScript and Pinia.
+
+## Demo
+You can view the [Demo here](https://github.com/OziOcb/TodoApp-Vue3-TypeScript-Pinia)
 
 ## Recommended IDE Setup
 
