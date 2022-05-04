@@ -1,5 +1,5 @@
 <template>
-  <form class="newTaskForm container" @submit.prevent="handleSubmit()">
+  <form class="newTaskForm container" @submit.prevent="handleAddTask()">
     <input
       ref="newTaskInput"
       type="text"
@@ -9,7 +9,7 @@
     <button type="submit" class="newTaskForm__button">Add</button>
   </form>
 
-  <button class="buttonRemoveAll" @click="handleRemoveAll()">
+  <button class="buttonRemoveAll" @click="handleRemoveAllTasks()">
     Remove all tasks
   </button>
 
@@ -21,8 +21,7 @@
             type="checkbox"
             :name="task.id"
             :id="task.id"
-            v-model="task.completed"
-            @change="saveTasks()"
+            v-model="task.isCompleted"
           />
           <label :for="task.id"> {{ task.title }} </label>
         </template>
@@ -36,7 +35,7 @@
         </template>
 
         <div>
-          <button @click="handleRemoveTask(task.id)">X</button>
+          <button @click="handleRemoveSingleTask(task.id)">X</button>
           <button @click="handleEditTask(task)">Edit</button>
         </div>
       </li>
@@ -45,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, watch } from "vue";
 import { v4 as uuidV4 } from "uuid";
 import type { Task } from "@/types/task-types";
 
@@ -65,45 +64,40 @@ onMounted(() => {
   newTaskInput.value?.focus();
 });
 
-const handleSubmit = () => {
+watch(
+  () => tasks.value,
+  () => saveTasks(),
+  { deep: true }
+);
+
+const handleAddTask = () => {
   if (newTaskTitle.value) {
     const newTask: Task = {
       id: uuidV4(),
       title: newTaskTitle.value,
-      completed: false,
-      createdAt: new Date(),
+      isCompleted: false,
       isEditing: false,
+      createdAt: new Date(),
     };
 
     tasks.value.push(newTask);
     newTaskTitle.value = "";
-
-    saveTasks();
   }
 };
 
-const handleRemoveTask = (taskId: string) => {
-  tasks.value = tasks.value.filter((task: Task) => task.id !== taskId);
-  saveTasks();
-};
+const handleRemoveAllTasks = () => (tasks.value = []);
 
-const handleRemoveAll = () => {
-  tasks.value = [];
-  saveTasks();
+const handleRemoveSingleTask = (taskId: string) => {
+  tasks.value = tasks.value.filter((task: Task) => task.id !== taskId);
 };
 
 const handleEditTask = async (task: Task) => {
   task.isEditing = true;
-
   await nextTick();
-
   editTaskInputs?.value[editTaskInputs?.value.length - 1]?.focus();
 };
 
-const handleSaveEditedTask = (task: Task) => {
-  task.isEditing = false;
-  saveTasks();
-};
+const handleSaveEditedTask = (task: Task) => (task.isEditing = false);
 </script>
 
 <style lang="scss" scoped>
