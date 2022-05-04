@@ -4,7 +4,7 @@
 This is a quick and simple app build using Vue3, TypeScript and Pinia.
 
 ## Demo
-You can view the [Demo here](https://github.com/OziOcb/TodoApp-Vue3-TypeScript-Pinia)
+You can view the [Demo here](https://todoapp-vue3-typescript-pinia.netlify.app/)
 
 ## Recommended IDE Setup
 
