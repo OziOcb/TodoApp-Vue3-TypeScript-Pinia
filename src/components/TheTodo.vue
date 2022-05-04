@@ -15,7 +15,7 @@
 
   <div class="container">
     <ul class="list">
-      <li class="list__item" v-for="task in tasks" :key="task.id">
+      <li class="list__item" v-for="task in todoStore.tasks" :key="task.id">
         <template v-if="!task.isEditing">
           <input
             type="checkbox"
@@ -35,7 +35,7 @@
         </template>
 
         <div>
-          <button @click="handleRemoveSingleTask(task.id)">X</button>
+          <button @click="handleRemoveTask(task.id)">X</button>
           <button @click="handleEditTask(task)">Edit</button>
         </div>
       </li>
@@ -45,59 +45,42 @@
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick, watch } from "vue";
-import { v4 as uuidV4 } from "uuid";
 import type { Task } from "@/types/task-types";
+import { useTodoStore } from "@/stores/todo";
+
+const todoStore = useTodoStore();
 
 const newTaskTitle = ref("");
 const newTaskInput = ref<HTMLInputElement | null>(null);
 const editTaskInputs = ref<HTMLInputElement[]>([]);
-const tasks = ref<Task[]>([]);
-const saveTasks = () => {
-  localStorage.setItem("tasks", JSON.stringify(tasks.value));
-};
 
 onMounted(() => {
-  const tasksJSON = localStorage.getItem("tasks");
-  if (!tasksJSON) return [];
-  tasks.value = JSON.parse(tasksJSON);
+  todoStore.loadTasks();
 
   newTaskInput.value?.focus();
 });
 
 watch(
-  () => tasks.value,
-  () => saveTasks(),
+  () => todoStore.tasks,
+  () => todoStore.saveTasks(),
   { deep: true }
 );
 
 const handleAddTask = () => {
-  if (newTaskTitle.value) {
-    const newTask: Task = {
-      id: uuidV4(),
-      title: newTaskTitle.value,
-      isCompleted: false,
-      isEditing: false,
-      createdAt: new Date(),
-    };
-
-    tasks.value.push(newTask);
-    newTaskTitle.value = "";
-  }
+  todoStore.addTask(newTaskTitle.value);
+  newTaskTitle.value = "";
 };
 
-const handleRemoveAllTasks = () => (tasks.value = []);
-
-const handleRemoveSingleTask = (taskId: string) => {
-  tasks.value = tasks.value.filter((task: Task) => task.id !== taskId);
-};
+const handleRemoveAllTasks = () => todoStore.removeAllTasks();
+const handleRemoveTask = (taskId: string) => todoStore.removeTask(taskId);
 
 const handleEditTask = async (task: Task) => {
-  task.isEditing = true;
+  todoStore.editTask(task, true);
   await nextTick();
   editTaskInputs?.value[editTaskInputs?.value.length - 1]?.focus();
 };
 
-const handleSaveEditedTask = (task: Task) => (task.isEditing = false);
+const handleSaveEditedTask = (task: Task) => todoStore.editTask(task, false);
 </script>
 
 <style lang="scss" scoped>
